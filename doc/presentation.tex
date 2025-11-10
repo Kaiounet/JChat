@@ -1,0 +1,103 @@
+\documentclass{beamer}
+
+% === Theme and basic setup ===
+\usetheme{Madrid} % You can try: Berlin, CambridgeUS, Singapore, Metropolis (if installed)
+\usecolortheme{default}
+\usefonttheme{professionalfonts}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+% === Colors and code style ===
+\definecolor{codegray}{rgb}{0.95,0.95,0.95}
+\lstset{
+  backgroundcolor=\color{codegray},
+  basicstyle=\ttfamily\footnotesize,
+  frame=single,
+  breaklines=true,
+  showstringspaces=false,
+  commentstyle=\color{gray},
+  keywordstyle=\color{blue},
+  stringstyle=\color{teal}
+}
+
+% === Title info ===
+\title[Project Presentation]{Project Presentation}
+\subtitle{Software Engineering Project}
+\author[Kai]{Kai — Software Engineer}
+\institute{Your University / Organization}
+\date{\today}
+
+\begin{document}
+
+% === Title slide ===
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% === Outline ===
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+% === Introduction ===
+\section{Introduction}
+\begin{frame}{Project Overview}
+  \begin{itemize}
+    \item Motivation: explain what problem the project solves.
+    \item Objective: describe the main goal.
+    \item Tools and technologies used.
+  \end{itemize}
+\end{frame}
+
+% === System Design ===
+\section{System Design}
+\begin{frame}{Architecture}
+  \centering
+  \includegraphics[width=0.75\textwidth]{example-image}
+  \captionof{figure}{System architecture diagram.}
+\end{frame}
+
+% === Implementation ===
+\section{Implementation}
+\begin{frame}[fragile]{Example Code}
+  \begin{lstlisting}[language=Python, caption=Simple API Endpoint]
+@app.route('/tasks', methods=['GET'])
+def get_tasks():
+    return jsonify([t.to_dict() for t in Task.query.all()])
+  \end{lstlisting}
+\end{frame}
+
+% === Results ===
+\section{Results}
+\begin{frame}{Testing and Results}
+  \begin{itemize}
+    \item Unit tests covered 90\% of the code.
+    \item The system handled 10,000 concurrent requests.
+    \item Demo available on GitHub.
+  \end{itemize}
+\end{frame}
+
+% === Conclusion ===
+\section{Conclusion}
+\begin{frame}{Conclusion}
+  \begin{itemize}
+    \item The project achieved its main objectives.
+    \item Future work: improve scalability and add new modules.
+  \end{itemize}
+\end{frame}
+
+% === Thank You ===
+\begin{frame}[plain, c]
+  \centering
+  \vspace{2cm}
+  \Huge{\textbf{Thank You!}}\\[1em]
+  \large Questions?\\[1em]
+  \href{mailto:kai@example.com}{kai@example.com}
+\end{frame}
+
+\end{document}

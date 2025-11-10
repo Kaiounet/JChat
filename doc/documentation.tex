@@ -1,0 +1,115 @@
+\documentclass[12pt,a4paper]{report}
+
+% === Packages ===
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french,english]{babel} % change or remove french if you only need english
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{caption}
+
+% === Geometry and layout ===
+\geometry{margin=1in}
+\setstretch{1.3}
+
+% === Code listing style ===
+\lstdefinestyle{code}{
+  backgroundcolor=\color{gray!10},
+  basicstyle=\ttfamily\small,
+  frame=single,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+  keywordstyle=\color{blue},
+  commentstyle=\color{gray},
+  stringstyle=\color{teal},
+  showstringspaces=false
+}
+
+% === Title Info ===
+\title{
+  \vspace{3cm}
+  \textbf{Project Documentation}\\[1em]
+  {\large Software Engineering Project}\\[2em]
+  \includegraphics[width=0.3\textwidth]{example-image}\\[1em]
+  {\small Your University / Organization}\\[3em]
+}
+\author{Kai \\[0.5em]\small Software Engineer}
+\date{\today}
+
+\begin{document}
+
+% === Title Page ===
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+% === Abstract ===
+\begin{abstract}
+This document provides an overview of the project’s purpose, design, and implementation details. 
+It includes architectural decisions, technologies used, and results obtained.
+\end{abstract}
+\newpage
+
+% === Table of Contents ===
+\tableofcontents
+\newpage
+
+% === Introduction ===
+\chapter{Introduction}
+Explain the problem this project addresses, its motivation, and overall goals.
+Include project scope and main objectives.
+
+% === Requirements ===
+\chapter{Requirements}
+List functional and non-functional requirements.
+\section{Functional Requirements}
+\begin{itemize}
+  \item The user can create an account.
+  \item The user can submit and view projects.
+\end{itemize}
+\section{Non-functional Requirements}
+\begin{itemize}
+  \item The application must be responsive.
+  \item Security must follow best practices.
+\end{itemize}
+
+% === Design & Architecture ===
+\chapter{System Design}
+Explain system architecture, components, and interactions.
+You can include diagrams:
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\textwidth]{example-image}
+  \caption{System Architecture Diagram}
+\end{figure}
+
+% === Implementation ===
+\chapter{Implementation}
+Show snippets of key code sections.
+\begin{lstlisting}[style=code, language=Python, caption={Example API Endpoint}]
+@app.route('/users', methods=['GET'])
+def list_users():
+    return jsonify([user.to_dict() for user in User.query.all()])
+\end{lstlisting}
+
+% === Results & Testing ===
+\chapter{Testing and Results}
+Describe testing strategies, results, and screenshots if needed.
+
+% === Conclusion ===
+\chapter{Conclusion}
+Summarize the work, challenges faced, and possible future improvements.
+
+% === References ===
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+\begin{thebibliography}{9}
+\bibitem{ref1} Author, \textit{Book Title}, Publisher, Year.
+\bibitem{ref2} Website: \url{https://example.com}
+\end{thebibliography}
+
+\end{document}
