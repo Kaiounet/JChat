@@ -33,7 +33,8 @@ public class ClientHandler implements Runnable {
             // Listen for messages
             String message;
             while ((message = in.readLine()) != null) {
-                System.out.println(username + ": " + message);
+                // In case you want to debug and output the message in the server's output
+                // System.out.println(username + ": " + message);
                 broadcast(username + ": " + message, this);
             }
         } catch (IOException e) {
