@@ -17,6 +17,12 @@
     </properties>
 
     <dependencies>
+        <!-- Java .env support -->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.2.0</version>
+        </dependency>
         <!-- AtlantaFX theme-->
         <dependency>
             <groupId>io.github.mkpaz</groupId>

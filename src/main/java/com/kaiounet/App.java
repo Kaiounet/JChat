@@ -29,9 +29,9 @@ public class App extends Application implements MessageReceiver {
     }
 
     private void showLoginDialog(Stage primaryStage) {
-        Dialog<String> dialog = new Dialog<>();
+        Dialog<String[]> dialog = new Dialog<>(); // Changed to String[] to return multiple values
         dialog.setTitle("Join Chat");
-        dialog.setHeaderText("Enter your username");
+        dialog.setHeaderText("Enter your username and server info");
 
         ButtonType loginButtonType = new ButtonType("Connect", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(loginButtonType, ButtonType.CANCEL);
@@ -39,36 +39,62 @@ public class App extends Application implements MessageReceiver {
         TextField usernameField = new TextField();
         usernameField.setPromptText("Username");
 
+        TextField serverField = new TextField();
+        serverField.setPromptText("Ex: 192.168.1.10:5555");
+
         VBox content = new VBox(10);
         content.getChildren().add(new Label("Username:"));
         content.getChildren().add(usernameField);
+        content.getChildren().add(new Label("Server's info:"));
+        content.getChildren().add(serverField);
         dialog.getDialogPane().setContent(content);
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == loginButtonType) {
-                return usernameField.getText();
+                return new String[] { usernameField.getText(), serverField.getText() };
             }
             return null;
         });
 
-        dialog.showAndWait().ifPresent(name -> {
-            if (name != null && !name.trim().isEmpty()) {
+        dialog.showAndWait().ifPresent(data -> {
+            String name = data[0];
+            String serverInfo = data[1];
+
+            if (name != null && !name.trim().isEmpty() &&
+                    serverInfo != null && !serverInfo.trim().isEmpty()) {
+
                 username = name.trim();
-                connectToServer(primaryStage);
+
+                String[] parts = serverInfo.trim().split(":");
+
+                if (parts.length == 2) {
+                    try {
+                        String host = parts[0];
+                        int port = Integer.parseInt(parts[1]);
+                        connectToServer(primaryStage, host, port);
+                    } catch (NumberFormatException e) {
+                        showError("Invalid Port", "Please enter a valid port number.");
+                        Platform.exit();
+                    }
+                } else {
+                    showError("Invalid Format", "Server info must be in format: host:port");
+                    Platform.exit();
+                }
             } else {
                 Platform.exit();
             }
         });
     }
 
-    private void connectToServer(Stage primaryStage) {
+    private void connectToServer(Stage primaryStage, String host, int port) {
         chatClient = new ChatClient();
         try {
-            chatClient.connect("localhost", 5555, username);
+            chatClient.connect(host, port, username);
             chatClient.startListening(this);
             showChatWindow(primaryStage);
         } catch (Exception e) {
-            showError("Connection Error", "Could not connect to server: " + e.getMessage());
+            showError("Connection Error",
+                    "Could not connect to server at " + host + ":" + port + "\n" + e.getMessage());
             Platform.exit();
         }
     }
