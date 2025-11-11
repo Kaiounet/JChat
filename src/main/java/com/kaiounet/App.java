@@ -1,5 +1,6 @@
 package com.kaiounet;
 
+import atlantafx.base.theme.NordLight;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -20,6 +21,7 @@ public class App extends Application implements MessageReceiver {
 
     @Override
     public void start(Stage primaryStage) {
+        Application.setUserAgentStylesheet(new NordLight().getUserAgentStylesheet());
         primaryStage.setTitle("Chat Application");
 
         // Show login dialog first
