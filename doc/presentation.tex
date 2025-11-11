@@ -1,103 +1,704 @@
 \documentclass{beamer}
-
-% === Theme and basic setup ===
-\usetheme{Madrid} % You can try: Berlin, CambridgeUS, Singapore, Metropolis (if installed)
-\usecolortheme{default}
-\usefonttheme{professionalfonts}
+\usetheme{Madrid}
+\usecolortheme{rose}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{graphicx}
-\usepackage{xcolor}
+\usepackage[french]{babel}
 \usepackage{listings}
-\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
 
-% === Colors and code style ===
-\definecolor{codegray}{rgb}{0.95,0.95,0.95}
+% Code listing settings
 \lstset{
-  backgroundcolor=\color{codegray},
-  basicstyle=\ttfamily\footnotesize,
-  frame=single,
-  breaklines=true,
-  showstringspaces=false,
-  commentstyle=\color{gray},
-  keywordstyle=\color{blue},
-  stringstyle=\color{teal}
+    basicstyle=\ttfamily\tiny,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    frame=single,
+    tabsize=2,
+    breaklines=true,
+    breakatwhitespace=false,
+    literate=
+      {é}{{\'e}}1
+      {è}{{\`e}}1
+      {ê}{{\^e}}1
+      {à}{{\`a}}1
+      {â}{{\^a}}1
+      {î}{{\^i}}1
+      {ô}{{\^o}}1
+      {û}{{\^u}}1
+      {ç}{{\c{c}}}1
+      {É}{{\'E}}1
+      {È}{{\`E}}1
+      {Ê}{{\^E}}1
+      {À}{{\`A}}1
 }
 
-% === Title info ===
-\title[Project Presentation]{Project Presentation}
-\subtitle{Software Engineering Project}
-\author[Kai]{Kai — Software Engineer}
-\institute{Your University / Organization}
+\lstdefinestyle{bash}{
+    language=bash,
+    basicstyle=\ttfamily\scriptsize,
+    backgroundcolor=\color{gray!10},
+}
+
+\lstdefinestyle{xml}{
+    language=XML,
+    basicstyle=\ttfamily\tiny,
+    backgroundcolor=\color{gray!10},
+}
+
+\title{Configuration d'un Projet JavaFX depuis Zéro}
+\subtitle{Utilisation de Maven et Make}
+\author{Iliass \& Youness}
 \date{\today}
 
 \begin{document}
 
-% === Title slide ===
-\begin{frame}
-  \titlepage
+\frame{\titlepage}
+
+\begin{frame}{Plan}
+\tableofcontents
 \end{frame}
 
-% === Outline ===
-\begin{frame}{Outline}
-  \tableofcontents
+\section{Prérequis}
+
+\begin{frame}{Ce Dont Vous Avez Besoin}
+
+\begin{block}{Logiciels Requis}
+\begin{itemize}
+    \item \textbf{Java JDK 11+} (recommandé : JDK 17)
+    \item \textbf{Maven 3.6+}
+    \item \textbf{Make} (optionnel mais recommandé)
+    \item \textbf{Votre éditeur préféré} (Neovim, VS Code, IntelliJ, etc.)
+\end{itemize}
+\end{block}
+
+\medskip % safer spacing in beamer than \vspace
+
+\begin{block}{Vérifier l'Installation}
+\hspace{0.5cm}java -version\\
+\hspace{0.5cm}mvn -version\\
+\hspace{0.5cm}make -version
+\end{block}
+
 \end{frame}
 
-% === Introduction ===
-\section{Introduction}
-\begin{frame}{Project Overview}
-  \begin{itemize}
-    \item Motivation: explain what problem the project solves.
-    \item Objective: describe the main goal.
-    \item Tools and technologies used.
-  \end{itemize}
+\begin{frame}{Pourquoi Cette Stack ?}
+\begin{columns}
+\column{0.47\textwidth}
+\begin{block}{Maven}
+\begin{itemize}
+    \item Gestion des dépendances
+    \item Structure du projet
+    \item Cycle de vie du build
+    \item Écosystème de plugins
+\end{itemize}
+\end{block}
+
+\column{0.47\textwidth}
+\begin{block}{Make}
+\begin{itemize}
+    \item Commandes simples
+    \item Automatisation des tâches
+    \item Multi-plateforme
+    \item Convivial pour développeurs
+\end{itemize}
+\end{block}
+\end{columns}
+
+\vspace{0.5cm}
+\centering
+\textbf{Maven gère Java, Make gère la commodité !}
 \end{frame}
 
-% === System Design ===
-\section{System Design}
-\begin{frame}{Architecture}
-  \centering
-  \includegraphics[width=0.75\textwidth]{example-image}
-  \captionof{figure}{System architecture diagram.}
+\section{Création du Projet Maven}
+
+\begin{frame}[fragile]{Étape 1 : Générer le Projet Maven}
+\begin{block}{Exécuter Maven Archetype}
+\begin{lstlisting}[style=bash]
+mvn archetype:generate \
+  -DgroupId=com.kaiounet \
+  -DartifactId=javafx-app \
+  -DarchetypeArtifactId=maven-archetype-quickstart \
+  -DarchetypeVersion=1.4 \
+  -DinteractiveMode=false
+\end{lstlisting}
+\end{block}
+
+\begin{alertblock}{Ce Que Cela Fait}
+Crée un projet Maven de base avec :
+\begin{itemize}
+    \item Structure de répertoires standard
+    \item Basic \texttt{pom.xml}
+    \item Exemple \texttt{App.java}
+\end{itemize}
+\end{alertblock}
 \end{frame}
 
-% === Implementation ===
-\section{Implementation}
-\begin{frame}[fragile]{Example Code}
-  \begin{lstlisting}[language=Python, caption=Simple API Endpoint]
-@app.route('/tasks', methods=['GET'])
-def get_tasks():
-    return jsonify([t.to_dict() for t in Task.query.all()])
-  \end{lstlisting}
+\begin{frame}[fragile]{Étape 2 : Naviguer vers le Projet}
+
+\begin{block}{Structure du Projet Créée}
+\begin{verbatim}
+javafx-app/
+|-- pom.xml
+`-- src/
+    |-- main/
+    |   `-- java/
+    |       `-- com/
+    |           `-- kaiounet/
+    |               `-- App.java
+    `-- test/
+        `-- java/
+            `-- com/
+                `-- kaiounet/
+                    `-- AppTest.java
+\end{verbatim}
+\end{block}
 \end{frame}
 
-% === Results ===
-\section{Results}
-\begin{frame}{Testing and Results}
-  \begin{itemize}
-    \item Unit tests covered 90\% of the code.
-    \item The system handled 10,000 concurrent requests.
-    \item Demo available on GitHub.
-  \end{itemize}
+\section{Configuration de JavaFX}
+
+\begin{frame}[fragile]{Étape 3 : Configurer pom.xml}
+\begin{block}{Ouvrir pom.xml}
+\begin{lstlisting}[style=bash]
+nvim pom.xml
+# ou
+code pom.xml
+# ou votre éditeur de choix
+\end{lstlisting}
+\end{block}
+
+\vspace{0.3cm}
+
+\begin{alertblock}{Configuration Clé Nécessaire}
+\begin{enumerate}
+    \item Version Java
+    \item Dépendances JavaFX
+    \item Plugin Maven JavaFX
+\end{enumerate}
+\end{alertblock}
 \end{frame}
 
-% === Conclusion ===
-\section{Conclusion}
-\begin{frame}{Conclusion}
-  \begin{itemize}
-    \item The project achieved its main objectives.
-    \item Future work: improve scalability and add new modules.
-  \end{itemize}
+\begin{frame}[fragile]{pom.xml - Propriétés}
+\begin{lstlisting}[style=xml]
+<properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <javafx.version>21.0.1</javafx.version>
+</properties>
+\end{lstlisting}
+
+\begin{itemize}
+    \item \textbf{compiler.source/target} : Version Java
+    \item \textbf{sourceEncoding} : UTF-8 pour tous les fichiers
+    \item \textbf{javafx.version} : Version JavaFX à utiliser
+\end{itemize}
 \end{frame}
 
-% === Thank You ===
-\begin{frame}[plain, c]
-  \centering
-  \vspace{2cm}
-  \Huge{\textbf{Thank You!}}\\[1em]
-  \large Questions?\\[1em]
-  \href{mailto:kai@example.com}{kai@example.com}
+\begin{frame}[fragile]{pom.xml - Dépendances}
+\begin{lstlisting}[style=xml]
+<dependencies>
+    <!-- JavaFX Controls -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+    
+    <!-- JavaFX FXML (optionnel) -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+</dependencies>
+\end{lstlisting}
+
+\textbf{javafx-controls} : Composants UI de base (Button, Label, etc.)
+\end{frame}
+
+\begin{frame}[fragile]{pom.xml - Plugin}
+\begin{lstlisting}[style=xml]
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-maven-plugin</artifactId>
+            <version>0.0.8</version>
+            <configuration>
+                <mainClass>com.kaiounet.App</mainClass>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+\end{lstlisting}
+
+\begin{alertblock}{Important}
+\texttt{mainClass} doit correspondre à votre package et nom de classe !
+\end{alertblock}
+\end{frame}
+
+\section{Création de l'Application JavaFX}
+
+\begin{frame}[fragile]{Étape 4 : Créer Votre Application}
+\begin{block}{Mettre à jour src/main/java/com/kaiounet/App.java}
+\begin{lstlisting}[language=Java]
+package com.kaiounet;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.geometry.Pos;
+
+public class App extends Application {
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Bonjour JavaFX");
+        // ... (suite sur la diapositive suivante)
+    }
+    
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{App.java - Code UI}
+\begin{lstlisting}[language=Java]
+@Override
+public void start(Stage primaryStage) {
+    primaryStage.setTitle("Bonjour JavaFX");
+    
+    Label label = new Label("Bienvenue dans JavaFX !");
+    Button button = new Button("Cliquez-moi");
+    
+    button.setOnAction(e -> 
+        label.setText("Bouton clique !"));
+    
+    VBox root = new VBox(10);
+    root.setAlignment(Pos.CENTER);
+    root.getChildren().addAll(label, button);
+    
+    Scene scene = new Scene(root, 400, 300);
+    primaryStage.setScene(scene);
+    primaryStage.show();
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Structure d'une Application JavaFX}
+\begin{center}
+\begin{tikzpicture}[node distance=1.5cm, auto]
+    \tikzstyle{component} = [rectangle, rounded corners, minimum width=2.5cm, minimum height=0.8cm, text centered, draw=black, fill=blue!20, font=\small]
+    \tikzstyle{arrow} = [thick,->,>=stealth]
+    
+    \node (app) [component] {Application};
+    \node (stage) [component, below of=app] {Stage};
+    \node (scene) [component, below of=stage] {Scene};
+    \node (layout) [component, below of=scene] {Layout (VBox)};
+    \node (nodes) [component, below of=layout] {Nodes (Button, Label)};
+    
+    \draw [arrow] (app) -- node[right, font=\tiny] {crée} (stage);
+    \draw [arrow] (stage) -- node[right, font=\tiny] {contient} (scene);
+    \draw [arrow] (scene) -- node[right, font=\tiny] {contient} (layout);
+    \draw [arrow] (layout) -- node[right, font=\tiny] {contient} (nodes);
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\section{Build et Exécution}
+
+\begin{frame}[fragile]{Étape 5 : Builder le Projet}
+\begin{block}{Compiler}
+\begin{lstlisting}[style=bash]
+mvn clean compile
+\end{lstlisting}
+\end{block}
+
+\begin{alertblock}{Que Se Passe-t-il ?}
+\begin{enumerate}
+    \item Télécharge les dépendances JavaFX
+    \item Compile les fichiers source Java
+    \item Place les fichiers .class dans \texttt{target/classes}
+\end{enumerate}
+\end{alertblock}
+
+\vspace{0.3cm}
+
+\begin{exampleblock}{Premier Build}
+Le premier build prend plus de temps en raison du téléchargement des dépendances. Les builds suivants sont plus rapides !
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Étape 6 : Exécuter l'Application}
+\begin{block}{Utilisation de Maven}
+\begin{lstlisting}[style=bash]
+mvn javafx:run
+\end{lstlisting}
+\end{block}
+
+\vspace{0.5cm}
+
+\begin{center}
+\textit{(Votre fenêtre JavaFX devrait apparaître !)}
+\end{center}
+\end{frame}
+
+\begin{frame}{Référence des Commandes Maven}
+\begin{block}{Commandes Maven Courantes}
+\begin{description}
+    \item[\texttt{mvn clean}] Supprimer le répertoire \texttt{target/}
+    \item[\texttt{mvn compile}] Compiler le code source
+    \item[\texttt{mvn package}] Créer un fichier JAR
+    \item[\texttt{mvn javafx:run}] Exécuter l'application JavaFX
+    \item[\texttt{mvn clean compile}] Nettoyer et compiler
+\end{description}
+\end{block}
+
+\begin{alertblock}{Astuce Pro}
+Les commandes peuvent être enchaînées : \texttt{mvn clean compile javafx:run}
+\end{alertblock}
+\end{frame}
+
+\section{Configuration de Make}
+
+\begin{frame}[fragile]{Pourquoi Utiliser Make ?}
+\begin{columns}
+\column{0.45\textwidth}
+\begin{block}{Sans Make}
+\begin{lstlisting}[style=bash]
+# A chaque fois...
+mvn clean compile
+mvn javafx:run
+mvn package
+\end{lstlisting}
+\end{block}
+
+\column{0.45\textwidth}
+\begin{block}{Avec Make}
+\begin{lstlisting}[style=bash]
+# Beaucoup plus facile !
+make compile
+make run
+make package
+\end{lstlisting}
+\end{block}
+\end{columns}
+
+\vspace{0.5cm}
+
+\centering
+\Large
+Make = Raccourcis pour les commandes Maven !
+\end{frame}
+
+\begin{frame}[fragile]{Étape 7 : Créer le Makefile}
+\begin{block}{Créer le Fichier}
+\begin{lstlisting}[style=bash]
+nvim Makefile
+# ou
+touch Makefile && code Makefile
+\end{lstlisting}
+\end{block}
+
+\begin{alertblock}{Important}
+\begin{itemize}
+    \item Le fichier doit s'appeler exactement \texttt{Makefile}
+    \item Utiliser des \textbf{TABulations} pour l'indentation (pas des espaces !)
+    \item Placer à la racine du projet
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Makefile - Structure de Base}
+\begin{lstlisting}[language=make]
+.PHONY: help clean compile run
+
+# Cible par defaut - affiche l'aide
+help:
+	@echo "Cibles disponibles :"
+	@echo "  make compile - Compiler le projet"
+	@echo "  make run     - Executer l'application"
+	@echo "  make clean   - Nettoyer les artefacts"
+
+# Compiler le projet
+compile:
+	mvn clean compile
+
+# Executer l'application
+run:
+	mvn javafx:run
+
+# Nettoyer les artefacts de build
+clean:
+	mvn clean
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Makefile - Cibles Avancées}
+\begin{lstlisting}[language=make]
+# Empaqueter en JAR
+package:
+	mvn package
+
+# Executer les tests
+test:
+	mvn test
+
+# Installer les dependances
+install:
+	mvn install
+
+# Rebuild complet et execution
+rebuild: clean compile run
+
+# Compilation et execution rapides
+quick: compile run
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exemple Complet de Makefile}
+\begin{lstlisting}[language=make, basicstyle=\ttfamily\tiny]
+.PHONY: help clean compile run package test
+
+help:
+	@echo "Cibles disponibles :"
+	@echo "  make compile  - Compiler le projet"
+	@echo "  make run      - Executer l'application"
+	@echo "  make package  - Empaqueter en JAR"
+	@echo "  make clean    - Nettoyer les artefacts"
+	@echo "  make test     - Executer les tests"
+
+compile:
+	mvn clean compile
+
+run:
+	mvn javafx:run
+
+package:
+	mvn package
+
+clean:
+	mvn clean
+
+test:
+	mvn test
+
+rebuild: clean compile run
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Étape 8 : Utiliser Votre Makefile}
+\begin{block}{Afficher l'Aide}
+\begin{lstlisting}[style=bash]
+make
+# ou
+make help
+\end{lstlisting}
+\end{block}
+
+\begin{block}{Utilisation Courante}
+\begin{lstlisting}[style=bash]
+# Compiler
+make compile
+
+# Executer l'application
+make run
+
+# Nettoyer et rebuilder
+make rebuild
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\section{Revue de la Structure du Projet}
+
+\begin{frame}[fragile]{Structure Finale du Projet}
+\begin{block}{Votre Configuration Complète}
+\begin{verbatim}
+javafx-app/
+|-- Makefile              # Automatisation Make
+|-- pom.xml               # Configuration Maven
+|-- src/
+|   `-- main/
+|       `-- java/
+|           `-- com/
+|               `-- kaiounet/
+|                   `-- App.java
+`-- target/              # Sortie du build (genere)
+    `-- classes/
+        `-- com/
+            `-- kaiounet/
+                `-- App.class
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}{Fichiers Clés Expliqués}
+\begin{description}
+    \item[\texttt{pom.xml}] Configuration Maven - dépendances, plugins, propriétés
+    \item[\texttt{Makefile}] Automatisation du build - raccourcis pour commandes courantes
+    \item[\texttt{App.java}] Votre code d'application JavaFX
+    \item[\texttt{target/}] Répertoire de sortie du build (ignoré par git)
+\end{description}
+
+\vspace{0.5cm}
+
+\begin{alertblock}{Git Ignore}
+Toujours ajouter \texttt{target/} à \texttt{.gitignore} !
+\end{alertblock}
+\end{frame}
+
+\section{Workflow de Démarrage Rapide}
+
+\begin{frame}[fragile]{Workflow de Développement}
+\begin{block}{Cycle de Développement Typique}
+\begin{lstlisting}[style=bash]
+# 1. Modifier votre code
+nvim src/main/java/com/kaiounet/App.java
+
+# 2. Compiler
+make compile
+
+# 3. Executer
+make run
+
+# 4. Apporter des modifications, repeter 1-3
+\end{lstlisting}
+\end{block}
+
+\begin{exampleblock}{Itération Rapide}
+Pour un développement rapide : \texttt{make rebuild} (nettoie, compile et exécute)
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Problèmes Courants et Solutions}
+\begin{block}{Problème : "mvn: command not found"}
+\textbf{Solution :} Installer Maven ou ajouter au PATH
+\end{block}
+
+\begin{block}{Problème : "JavaFX components not found"}
+\textbf{Solution :} Vérifier les dépendances \texttt{pom.xml}, exécuter \texttt{mvn clean compile}
+\end{block}
+
+\begin{block}{Problème : "Make: *** missing separator"}
+\textbf{Solution :} Utiliser TAB (pas des espaces) pour l'indentation dans le Makefile
+\end{block}
+
+\begin{block}{Problème : Mauvaise mainClass}
+\textbf{Solution :} Vérifier que \texttt{mainClass} dans \texttt{pom.xml} correspond à votre package
+\end{block}
+\end{frame}
+
+\section{Prochaines Étapes}
+
+\begin{frame}{Étendre Votre Projet}
+\begin{block}{Ajouter Plus de Dépendances}
+\begin{itemize}
+    \item \texttt{javafx-web} - Composant WebView
+    \item \texttt{javafx-media} - Lecture audio/vidéo
+    \item \texttt{javafx-swing} - Intégration Swing
+\end{itemize}
+\end{block}
+
+\begin{block}{Améliorer le Makefile}
+\begin{itemize}
+    \item Ajouter des cibles pour serveurs/clients spécifiques
+    \item Créer des cibles de déploiement
+    \item Ajouter des commandes de build docker
+\end{itemize}
+\end{block}
+
+\begin{block}{Contrôle de Version}
+\begin{itemize}
+    \item Initialiser git : \texttt{git init}
+    \item Ajouter \texttt{.gitignore}
+    \item Committer votre configuration
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Meilleures Pratiques}
+\begin{enumerate}
+    \item \textbf{Garder pom.xml propre} - N'ajouter que les dépendances nécessaires
+    \item \textbf{Utiliser les propriétés} - Définir les versions dans \texttt{<properties>}
+    \item \textbf{Documenter le Makefile} - Ajouter des commentaires pour les cibles complexes
+    \item \textbf{Tester régulièrement} - Ajouter des tests unitaires, exécuter avec \texttt{make test}
+    \item \textbf{Contrôle de version} - Committer \texttt{pom.xml} et \texttt{Makefile}
+\end{enumerate}
+
+\vspace{0.5cm}
+
+\begin{alertblock}{Ne Pas Committer}
+Ne jamais committer le répertoire \texttt{target/} ou les fichiers spécifiques à l'IDE !
+\end{alertblock}
+\end{frame}
+
+% \begin{frame}{Ressources}
+% \begin{block}{Documentation}
+% \begin{itemize}
+%     \item JavaFX : \url{https://openjfx.io/}
+%     \item Maven : \url{https://maven.apache.org/}
+%     \item Make : \url{https://www.gnu.org/software/make/manual/}
+% \end{itemize}
+% \end{block}
+
+% \begin{block}{Tutoriels}
+% \begin{itemize}
+%     \item Tutoriel JavaFX : \url{https://docs.oracle.com/javafx/}
+%     \item Maven en 5 Minutes : \url{https://maven.apache.org/guides/}
+% \end{itemize}
+% \end{block}
+% \end{frame}
+
+\begin{frame}{Carte de Référence Rapide}
+\begin{block}{Commandes Essentielles}
+\begin{description}
+    \item[\texttt{mvn archetype:generate}] Créer un nouveau projet
+    \item[\texttt{make compile}] Compiler le code
+    \item[\texttt{make run}] Exécuter l'application
+    \item[\texttt{make clean}] Nettoyer le build
+    \item[\texttt{make help}] Afficher les commandes disponibles
+\end{description}
+\end{block}
+
+\begin{block}{Emplacements des Fichiers}
+\begin{description}
+    \item[Source] \texttt{src/main/java/}
+    \item[Ressources] \texttt{src/main/resources/}
+    \item[Tests] \texttt{src/test/java/}
+    \item[Sortie] \texttt{target/}
+\end{description}
+\end{block}
+\end{frame}
+
+\begin{frame}{Résumé}
+\begin{block}{Ce Que Nous Avons Couvert}
+\begin{enumerate}
+    \item Création de la structure du projet Maven
+    \item Configuration des dépendances JavaFX
+    \item Écriture d'une application JavaFX simple
+    \item Build et exécution de l'application
+    \item Configuration de Make pour l'automatisation
+    \item Apprentissage du workflow de développement
+\end{enumerate}
+\end{block}
+
+\vspace{0.5cm}
+
+\begin{center}
+\textbf{Vous êtes maintenant prêt à créer des applications JavaFX !}
+\end{center}
 \end{frame}
 
 \end{document}
