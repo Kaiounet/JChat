@@ -28,8 +28,6 @@ run-clients:
 	@echo "Make sure you have tmux installed for this to work"
 	tmux new-window -n chat 'make client' \; \
 		split-window -h 'sleep 2 && make client' \; \
-		split-window -v 'sleep 3 && make client' \; \
-		split-window -v 'sleep 4 && make client' \; \
 		select-layout tiled \; \
 		select-window -t :chat
 
